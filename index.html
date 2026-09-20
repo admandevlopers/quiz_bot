@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 5 Computer Science Quiz</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .quiz-container { max-width: 650px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 25px; font-size: 24px; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .question-block { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
+        .question-block.active { display: block; }
+        .topic-tag { display: inline-block; background-color: #3498db; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 5px; text-transform: uppercase; margin-bottom: 10px; }
+        .question-text { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #2c3e50; line-height: 1.4; }
+        .options-list { list-style: none; padding: 0; }
+        .option-item { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; padding: 14px 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 15px; }
+        .option-item:hover { background: #e8f4fd; border-color: #3498db; transform: translateY(-2px); }
+        .option-item.selected { background: #3498db; color: #fff; border-color: #2980b9; }
+        .hint-btn { background: none; border: none; color: #7f8c8d; cursor: pointer; font-size: 13px; text-decoration: underline; margin-top: 5px; display: block; }
+        .hint-btn:hover { color: #34495e; }
+        .hint-text { display: none; background: #fef9e7; border-left: 4px solid #f1c40f; padding: 10px 15px; margin-top: 10px; font-size: 14px; border-radius: 0 6px 6px 0; color: #7e5109; }
+        .controls { display: flex; justify-content: space-between; margin-top: 30px; align-items: center; }
+        .btn { background: #2ecc71; color: white; border: none; padding: 12px 25px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #27ae60; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-prev { background: #95a5a6; }
+        .btn-prev:hover { background: #7f8c8d; }
+        .progress-bar { font-size: 14px; color: #7f8c8d; font-weight: bold; }
+        .result-screen { text-align: center; padding: 20px 0; }
+        .score-display { font-size: 48px; font-weight: bold; color: #2ecc71; margin: 20px 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>💻 Class 5 Computer Science Quiz</h2>
+    
+    <div id="quiz-questions"></div>
+
+    <div class="controls" id="quiz-controls">
+        <button class="btn btn-prev" id="prev-btn" onclick="changeQuestion(-1)" disabled>Previous</button>
+        <span class="progress-bar" id="progress">Question 1 of 10</span>
+        <button class="btn" id="next-btn" onclick="changeQuestion(1)" disabled>Next</button>
+    </div>
+
+    <div id="result-container" class="result-screen" style="display: none;">
+        <h3>Quiz Completed! 🎉</h3>
+        <p>Your total score is:</p>
+        <div class="score-display" id="score-text">0 / 10</div>
+        <button class="btn" onclick="resetQuiz()">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            topic: "Output Devices",
+            question: "Which of the following computer parts is classified as a primary visual output device that shows pictures, text, and videos?",
+            options: ["Keyboard", "Monitor", "Mouse", "Microphone"],
+            answer: 1,
+            hint: "Think of the part of the computer that looks like a television screen and lights up to show you your desktop."
+        },
+        {
+            topic: "Output Devices",
+            question: "Which output device is used to transfer digital text and pictures from your computer screen onto a physical sheet of paper?",
+            options: ["Speaker", "Scanner", "Joystick", "Printer"],
+            answer: 3,
+            hint: "It is the machine that takes blank sheets of paper and creates hard copies of your homework or drawings."
+        },
+        {
+            topic: "Output Devices",
+            question: "Which of these devices lets you hear audio, sound effects, and music played by the computer?",
+            options: ["Speakers", "Webcam", "CPU", "Light pen"],
+            answer: 0,
+            hint: "These often sit on either side of your monitor or come as a headset to project sound out of the system."
+        },
+        {
+            topic: "Keyboard Shortcuts",
+            question: "Which keyboard shortcut key combination is used to 'Copy' selected text or images?",
+            options: ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + S"],
+            answer: 2,
+            hint: "Combine the Control key with the very first letter of the word 'Copy'."
+        },
+        {
+            topic: "Keyboard Shortcuts",
+            question: "Which keyboard shortcut combination is used to 'Paste' text or images that have already been copied?",
+            options: ["Ctrl + C", "Ctrl + V", "Ctrl + Z", "Ctrl + A"],
+            answer: 1,
+            hint: "It is the letter right after 'U' and 'T' on your keyboard, paired with the Ctrl key."
+        },
+        {
+            topic: "Keyboard Shortcuts",
+            question: "Which shortcut key combination quickly saves your current work or document in programs like MS Word?",
+            options: ["Ctrl + P", "Ctrl + N", "Ctrl + O", "Ctrl + S"],
+            answer: 3,
+            hint: "Think of the first letter of the word 'Save' combined with the Ctrl key."
+        },
+        {
+            topic: "Keyboard Shortcuts",
+            question: "Which keyboard shortcut is used to 'Undo' your last action or mistake while typing?",
+            options: ["Ctrl + Z", "Ctrl + Y", "Ctrl + B", "Ctrl + I"],
+            answer: 0,
+            hint: "It pairs the Ctrl key with the very last letter of the English alphabet."
+        },
+        {
+            topic: "Computer Storage",
+            question: "What type of computer memory is temporary and volatile, meaning it loses all stored data when the power turns off?",
+            options: ["Hard disk", "RAM", "CD-ROM", "DVD"],
+            answer: 1,
+            hint: "It acts as the computer's fast temporary desk space for running active apps, resetting itself upon reboot."
+        },
+        {
+            topic: "Computer Storage",
+            question: "Which of these internal components acts as the main permanent storage drive to hold files, games, and the operating system on a desktop PC?",
+            options: ["RAM stick", "Monitor display", "Hard disk", "Keyboard circuit"],
+            answer: 2,
+            hint: "It is a heavy metal disk container located inside the CPU cabinet where all your downloaded games and documents live."
+        },
+        {
+            topic: "Computer Storage",
+            question: "What is a small, portable data storage device that plugs directly into a computer's USB port?",
+            options: ["Pen drive", "Power cable", "Mouse pad", "Ethernet wire"],
+            answer: 0,
+            hint: "It can easily fit in your pocket and connects via a universal serial bus plug."
+        }
+    ];
+
+    let currentQuestionIdx = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
+
+    function buildQuiz() {
+        const quizContainer = document.getElementById('quiz-questions');
+        quizContainer.innerHTML = '';
+        
+        quizData.forEach((q, qIdx) => {
+            const block = document.createElement('div');
+            block.className = `question-block ${qIdx === 0 ? 'active' : ''}`;
+            block.id = `q-block-${qIdx}`;
+
+            let optionsHtml = '';
+            q.options.forEach((opt, oIdx) => {
+                optionsHtml += `<li class="option-item" onclick="selectOption(${qIdx}, ${oIdx})">${opt}</li>`;
+            });
+
+            block.innerHTML = `
+                <span class="topic-tag">${q.topic}</span>
+                <div class="question-text">${qIdx + 1}. ${q.question}</div>
+                <ul class="options-list">${optionsHtml}</ul>
+                <button class="hint-btn" onclick="toggleHint(${qIdx})">💡 Need a Hint?</button>
+                <div class="hint-text" id="hint-${qIdx}">${q.hint}</div>
+            `;
+            quizContainer.appendChild(block);
+        });
+        updateControls();
+    }
+
+    function selectOption(qIdx, oIdx) {
+        userAnswers[qIdx] = oIdx;
+        const block = document.getElementById(`q-block-${qIdx}`);
+        const items = block.getElementsByClassName('option-item');
+        
+        for(let i=0; i<items.length; i++) {
+            items[i].classList.remove('selected');
+        }
+        items[oIdx].classList.add('selected');
+        document.getElementById('next-btn').disabled = false;
+    }
+
+    function toggleHint(qIdx) {
+        const hint = document.getElementById(`hint-${qIdx}`);
+        hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function changeQuestion(direction) {
+        document.getElementById(`q-block-${currentQuestionIdx}`).classList.remove('active');
+        currentQuestionIdx += direction;
+
+        if (currentQuestionIdx >= quizData.length) {
+            showResults();
+        } else {
+            document.getElementById(`q-block-${currentQuestionIdx}`).classList.add('active');
+            updateControls();
+        }
+    }
+
+    function updateControls() {
+        document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
+document.getElementById('progress').innerText = Question ${currentQuestionIdx + 1} of ${quizData.length};const nextBtn = document.getElementById('next-btn');nextBtn.innerText = currentQuestionIdx === quizData.length - 1 ? "Submit Answers" : "Next";nextBtn.disabled = userAnswers[currentQuestionIdx] === null;}function showResults() {document.getElementById('quiz-questions').style.display = 'none';document.getElementById('quiz-controls').style.display = 'none';let score = 0;userAnswers.forEach((ans, idx) => {if (ans === quizData[idx].answer) score++;});document.getElementById('score-text').innerText = ${score} / ${quizData.length};document.getElementById('result-container').style.display = 'block';}function resetQuiz() {currentQuestionIdx = 0;userAnswers.fill(null);document.getElementById('quiz-questions').style.display = 'block';document.getElementById('quiz-controls').style.display = 'flex';document.getElementById('result-container').style.display = 'none';buildQuiz();}window.onload = buildQuiz;
